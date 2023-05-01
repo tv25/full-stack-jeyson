@@ -41,19 +41,24 @@ namespace Server_Client.Controllers
         new Language { ID = 5, Name = "JS" },
         new Language { ID = 6, Name = "React" }
     };
+        //this a http get function that retrun the list of all the Languages
         [HttpGet]
         [Route("/Alllanguages")]
         public ActionResult<List<Language>> GetLanguages()
         {
             return _languages;
         }
+        //this a http get function that retrun the list of all the Candidates
         [HttpGet]
         [Route("/AllCandidates")]
         public ActionResult<List<Candidate>> GetCandidate()
         {
             return _candidates;
         }
-
+        /*A function that receives a language ID number and a string that 
+         * indicates whether the candidate is junior or senior
+           The function will return the list of candidates who know the language and are junior or senior
+         */
         [HttpGet]
         [Route("/candidates/{languageId}/{experience}")]
         public ActionResult<IEnumerable<Candidate>> GetCandidates(int languageId, string experience)
@@ -67,15 +72,26 @@ namespace Server_Client.Controllers
             var candidates = _candidates
                 .Where(c => c.KnownLanguages.Contains(language.Name))
                 .ToList();
-            /*
+            
             if (!string.IsNullOrEmpty(experience))
             {
-                int years = experience == "senyor" ? 3 : 0;
-                candidates = candidates.Where(c =>
-                    c.YearStarted.HasValue &&
-                    DateTime.Now.Year - c.YearStarted.Value.Year >= years)
-                    .ToList();
-            }*/
+
+                if (experience == "Senior")
+                {
+                    candidates = candidates.Where(c =>
+                        c.YearStarted.HasValue &&
+                        DateTime.Now.Year - c.YearStarted.Value.Year >= 3)
+                        .ToList();
+                }
+                else
+                {
+                    candidates = candidates.Where(c =>
+                        c.YearStarted.HasValue &&
+                        DateTime.Now.Year - c.YearStarted.Value.Year < 3)
+                        .ToList();
+                }
+
+            }
 
             return candidates;
         }
